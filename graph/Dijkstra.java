@@ -1,45 +1,48 @@
 class Dijkstra {
     int n;
-    HashMap<Integer, HashMap<Integer, Integer>> g = new HashMap<>();
-    int[] dis;
-    //given a graph, return the minimum distance array from node src to all nodes
-    public int[] run(int n, int[][] edges, int src) {
+    HashMap<Integer, Integer>[] g;
+    long[] dis;
+    public Dijkstra(int n, int[][] edges) {
         //node is from 0 to n - 1
         this.n = n;
+        g = new HashMap[n];
         for (int i = 0; i < n; i++)
-            g.put(i, new HashMap<>());
+            g[i] = new HashMap<>();;
         for (int[] e : edges)
-            g.get(e[0]).put(e[1], e[2]);
-        dis = new int[n];
+            if (!g[e[0]].containsKey(e[1]) || e[2] < g[e[0]].get(e[1]))
+                g[e[0]].put(e[1], e[2]);
+    }
+    public long[] run(int src) {
+        dis = new long[n];
         boolean[] flag = new boolean[n];
-        for (int i = 0; i < n; i++)
-            if (i != src)
-                dis[i] = -1;
-        PriorityQueue<int[]> pq = new PriorityQueue<>((int[] a, int[] b) -> {
-            if (a[0] == b[0])
+        Arrays.fill(dis, -1);
+        dis[src] = 0;
+        PriorityQueue<long[]> pq = new PriorityQueue<>((long[] a, long[] b) -> {
+            if (a[0] == -1 && b[0] == -1)
                 return 0;
-            if (a[0] == -1)
+            else if (a[0] == -1)
                 return 1;
-            if (b[0] == -1)
+            else if (b[0] == -1)
                 return -1;
-            return Integer.compare(a[0], b[0]);
+            else
+                return Long.compare(a[0], b[0]);
         });
-        for (int i = 0; i < n; i++)
-            pq.add(new int[]{dis[i], i});
-        while (pq.size() > 0) {
-            int[] e = pq.poll();
-            if (flag[e[1]])
+        pq.add(new long[]{dis[src], src});
+        while (!pq.isEmpty()) {
+            long[] e = pq.poll();
+            int x = (int)e[1];
+            if (flag[x])
                 continue;
-            flag[e[1]] = true;
-            if (dis[e[1]] == -1)
+            flag[x] = true;
+            if (dis[x] == -1)
                 continue;
-            for (int x : g.get(e[1]).keySet()) {
-                if (flag[x])
+            for (int y : g[x].keySet()) {
+                if (flag[y])
                     continue;
-                int d = g.get(e[1]).get(x);
-                if (dis[x] == -1 || dis[e[1]] + d < dis[x]) {
-                    dis[x] = dis[e[1]] + d;
-                    pq.add(new int[]{dis[x], x});
+                int d = g[x].get(y);
+                if (dis[y] == -1 || dis[x] + d < dis[y]) {
+                    dis[y] = dis[x] + d;
+                    pq.add(new long[]{dis[y], y});
                 }
             }
         }
