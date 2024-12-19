@@ -1,39 +1,35 @@
 class KMP {
     String p;
     int np;
+    //the maximumlength of p's suffix (ending at the corresponding position) that matches p's prefix
     int[] pi;
-    void init(String p) {
+    KMP(String p) {
         this.p = p;
         np = p.length();
         pi = new int[np];
-        int pos = -1;
+        int len = 0;
         for (int i = 0; i < np; i++) {
-            while (pos != -1 && p.charAt(i) != p.charAt(pos + 1))
-                pos = pi[pos];
-            if (pos + 1 < i && p.charAt(i) == p.charAt(pos + 1))
-                pos++;
-            pi[i] = pos;
+            while (len != 0 && p.charAt(i) != p.charAt(len))
+                len = pi[len - 1];
+            if (len < i && p.charAt(i) == p.charAt(len))
+                len++;
+            pi[i] = len;
         }
     }
-    int find(String s) {
-        int pos = -1;
+    //return a list of starting indexes when matching
+    ArrayList<Integer> find(String s) {
+        ArrayList<Integer> a = new ArrayList<>();
+        int len = 0;
         for (int i = 0; i < s.length(); i++) {
-            if (pos == np - 1)
-                pos = pi[pos];
-            while (pos != -1 && s.charAt(i) != p.charAt(pos + 1))
-                pos = pi[pos];
-            if (s.charAt(i) == p.charAt(pos + 1))
-                pos++;
-            if (pos == np - 1) //hit
-                return i - np + 1;
+            if (len == np)
+                len = pi[len - 1];
+            while (len != 0 && s.charAt(i) != p.charAt(len))
+                len = pi[len - 1];
+            if (s.charAt(i) == p.charAt(len))
+                len++;
+            if (len == np) //hit
+                a.add(i - np + 1);
         }
-        return -1;
-    }
-    public static void main(String[] args) {
-        String text = "abcdabcdeabc", pattern = "abcde";
-        KMP k = new KMP();
-        k.init(pattern);
-        int firstPos = k.find(text);
-        System.out.printf("text = %s, pattern = %s, firstPos = %d\n", text, pattern, firstPos);
+        return a;
     }
 }
