@@ -1,5 +1,5 @@
-public class Inv {
-    private long exgcd(long a, long b, long[] x, long[] y) {
+class Inv {
+    long exgcd(long a, long b, long[] x, long[] y) {
         if (b == 0) {
             x[0] = 1L;
             y[0] = 0L;
@@ -11,7 +11,7 @@ public class Inv {
         y[0] = tmp - a / b * y[0];
         return d;
     }
-    public long inv(long a, long m) {
+    long inv(long a, long m) {
         long[] x = {0};
         long[] y = {0};
         long d = exgcd(a, m, x, y);
